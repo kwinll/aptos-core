@@ -632,12 +632,12 @@ where
         Pin<Box<dyn Stream<Item = io::Result<(Self::Inbound, NetworkAddress)>> + Send + 'static>>;
 
     fn dial(&self, peer_id: PeerId, addr: NetworkAddress) -> io::Result<Self::Outbound> {
-        self.dial(peer_id, addr)
+        AptosNetTransport::dial(self, peer_id, addr)
             .map(|upgrade_fut| upgrade_fut.boxed())
     }
 
     fn listen_on(&self, addr: NetworkAddress) -> io::Result<(Self::Listener, NetworkAddress)> {
-        let (listener, listen_addr) = self.listen_on(addr)?;
+        let (listener, listen_addr) = AptosNetTransport::listen_on(self, addr)?;
         let listener = listener
             .map_ok(|(upgrade_fut, addr)| (upgrade_fut.boxed(), addr))
             .boxed();
